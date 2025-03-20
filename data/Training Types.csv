@@ -1,0 +1,6 @@
+Training Type,Start Crew Type,End Crew Type,,
+1,Boeing FO,Airbus FO,,
+2,Boeing FO,Boeing C,,
+3,Boeing C,Airbus C,,
+4,External Boeing FO,Boeing FO,,
+5,External Airbus FO,Airbus FO,,
