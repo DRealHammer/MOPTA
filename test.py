@@ -1,8 +1,12 @@
 import streamlit as st
+from moptamodel import MOPTAModel
 
-st.write('## Das ist richtig cool!!\n'
-'Bitte helfen sie mir')
+optmodel = MOPTAModel()
+optmodel.setOptimizationTarget()
 
-st.button('I bims')
+solved = False
+if st.button('Run OPT'):
+    optmodel.optimize()
+    solved = True
 
-st.audio_input(label='boiboi')
+    st.write(optmodel.model.getBestSol())
