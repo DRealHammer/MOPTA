@@ -646,7 +646,7 @@ class MOPTAModel:
         for aircraft in ['A', 'B']:
             for week in range(self.n_weeks):
 
-                self.model.addCons(self.hiring_vars_week[aircraft][week] <= 2)
+                self.model.addCons(self.hiring_vars_week[aircraft][week] == 0)
 
 
     def get_active_trainer_values(self):

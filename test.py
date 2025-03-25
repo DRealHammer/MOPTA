@@ -1,7 +1,7 @@
 import streamlit as st
 from moptamodel import MOPTAModel
 
-optmodel = MOPTAModel()
+optmodel = MOPTAModel(ddir='.')
 optmodel.setOptimizationTarget()
 
 solved = False

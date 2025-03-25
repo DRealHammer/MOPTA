@@ -1,4 +1,5 @@
-PySCIPOpt==5.4.1
-streamlit==1.43.2
-pandas==2.2.3
-numpy==2.0.2
+PySCIPOpt
+streamlit
+pandas
+numpy
+matplotlib
