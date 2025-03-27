@@ -20,7 +20,8 @@ selection_options = [
     'Crew Demand',
     'Simulator Availability',
     'Training',
-    'Airbus Crew EOY Requirement'
+    'Airbus Crew EOY Requirement',
+    'Grounded Aircraft Cost'
 ]
 current_selection = st.selectbox("data selection", options=selection_options, label_visibility='collapsed')
 
@@ -28,26 +29,28 @@ current_selection = st.selectbox("data selection", options=selection_options, la
 current_df = None
 
 if current_selection == 'Initial Crew':
-    current_df = st.session_state.model.init_crew_df
-
+    current_df = st.session_state.data['init_crew_df']
 
 elif current_selection == 'Initial Crew Type Qualification':
-    current_df = st.session_state.model.init_qual_df
+    current_df = st.session_state.data['init_qual_df']
 
 elif current_selection == 'Crew Leaving':
-    current_df = st.session_state.model.crew_leaving_df
+    current_df = st.session_state.data['crew_leaving_df']
 
 elif current_selection == 'Crew Demand':
-    current_df = st.session_state.model.demand_df
+    current_df = st.session_state.data['demand_df']
 
 elif current_selection == 'Simulator Availability':
-    current_df = st.session_state.model.sim_df
+    current_df = st.session_state.data['sim_df']
 
 elif current_selection == 'Training':
-    current_df = st.session_state.model.training_structures_df
+    current_df = st.session_state.data['training_structures_df']
 
 elif current_selection == 'Airbus Crew EOY Requirement':
-    current_df = st.session_state.model.EOY_requirement_df
+    current_df = st.session_state.data['EOY_requirement_df']
+
+elif current_selection == 'Grounded Aircraft Cost':
+    current_df = st.session_state.data['grounded_cost_df']
 
 
 edited_df = st.data_editor(current_df, num_rows='dynamic')
@@ -55,22 +58,25 @@ edited_df = st.data_editor(current_df, num_rows='dynamic')
 
 
 if current_selection == 'Initial Crew':
-    st.session_state.model.init_crew_df = edited_df
+    st.session_state.data['init_crew_df'] = edited_df
 
 elif current_selection == 'Initial Crew Type Qualification':
-    st.session_state.model.init_qual_df = edited_df
+    st.session_state.data['init_qual_df'] = edited_df
 
 elif current_selection == 'Crew Leaving':
-    st.session_state.model.crew_leaving_df = edited_df
+    st.session_state.data['crew_leaving_df'] = edited_df
 
 elif current_selection == 'Crew Demand':
-    st.session_state.model.demand_df = edited_df
+    st.session_state.data['demand_df'] = edited_df
 
 elif current_selection == 'Simulator Availability':
-    st.session_state.model.sim_df = edited_df
+    st.session_state.data['sim_df'] = edited_df
 
 elif current_selection == 'Training':
-    st.session_state.model.training_structures_df = edited_df
+    st.session_state.data['training_structures_df'] = edited_df
 
 elif current_selection == 'Airbus Crew EOY Requirement':
-    st.session_state.model.EOY_requirement_df = edited_df
+    st.session_state.data['EOY_requirement_df'] = edited_df
+
+elif current_selection == 'Grounded Aircraft Cost':
+    st.session_state.data['grounded_cost_df'] = edited_df

@@ -1,9 +1,7 @@
 import streamlit as st
-from moptamodel import MOPTAModel
 import time
 from datetime import datetime
 import pandas as pd
-from pyscipopt import SCIP_EVENTTYPE
 
 
 
@@ -16,117 +14,40 @@ if "current_run" not in st.session_state:
     st.session_state.current_run = None
 
 
-def scipOutputhdlr(model, event):
-    st.session_state.modelOutput.append(model.getStage())
+if "modelOutput" not in st.session_state:
+    st.session_state.modelOutput = []
 
 
-if "model" not in st.session_state:
-        st.session_state.model = MOPTAModel(ddir='data')
-        st.session_state.model.model.attachEventHandlerCallback(scipOutputhdlr, [SCIP_EVENTTYPE.PRESOLVEROUND, SCIP_EVENTTYPE.BOUNDCHANGED])
-        st.session_state.modelOutput = []
+def read_csv(dir):
+
+    init_crew_df = pd.read_csv(f'{dir}/Initial Crew.csv')
+    init_qual_df = pd.read_csv(f'{dir}/Initial Crew Type Qualification.csv')
+    crew_leaving_df = pd.read_csv(f'{dir}/Crew Leaving.csv').fillna(0)
+    demand_df = pd.read_csv(f'{dir}/Crew Demand.csv')[['Week', 'Aircraft', 'Demand']]
+    sim_df = pd.read_csv(f'{dir}/Simulator Availability.csv')
+    training_structures_df = pd.read_csv(f'{dir}/Training.csv').fillna(0)
+    EOY_requirement_df = pd.read_csv(f'{dir}/Airbus Crew EOY Requirement.csv')
+    grounded_cost_df = pd.read_csv(f'{dir}/Grounded Aircraft Cost.csv')
+
+    return {'init_crew_df': init_crew_df,
+            'init_qual_df': init_qual_df,
+            'crew_leaving_df': crew_leaving_df,
+            'demand_df': demand_df,
+            'sim_df': sim_df,
+            'training_structures_df': training_structures_df,
+            'EOY_requirement_df': EOY_requirement_df,
+            'grounded_cost_df': grounded_cost_df}
+
+if 'data' not in st.session_state:
+    st.session_state.data = read_csv('data')
 
 # Seitenverwaltung
 def main():
 
-    pg = st.navigation([st.Page("pages/dashboard.py", title="Dashboard"), st.Page("pages/data_editor.py", title='Data Upload & Editing')])
+    p_dashboard = st.Page("pages/dashboard.py", title="Dashboard")
+    p_edit = st.Page("pages/data_editor.py", title='Data Upload & Editing')
+    pg = st.navigation([p_dashboard, p_edit])
     pg.run()
     
-
-
-def dashboard_page():
-
-    start_time = time.time()
-    result = {
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "duration": time.time() - start_time,
-        "success": True,
-        "schedule": pd.DataFrame({
-            "Week": range(1, 13),
-            **{f"Training {i+1}": [f"Crew {w*10+i}" for w in range(12)] for i in range(5)}
-        }),
-        "crew_data": pd.DataFrame({
-            "Week": range(1, 13),
-            "Available Crews": [50 - w*3 for w in range(12)]
-        }),
-        "metrics": {
-            "Total Cost": 1_250_000,
-            "EOY Status": {
-                "FO": {"required": 140, "current": 118},
-                "C": {"required": 30, "current": 22}
-            }
-        }
-    }
-
-    # Header section
-    col1, col2 = st.columns([4, 1])
-    with col1:
-        st.title("Transavia Training Schedule")
-    
-    with col2:
-        run_options = ["Latest"] + [f"Run {i+1}" for i in range(len(st.session_state.optimization_runs))]
-        selected_run = st.selectbox("Select run", options=run_options)
-        
-        if st.button("Run Optimization", type='primary'):
-            with st.spinner("Optimizing schedule..."):
-                result = mock_optimization()
-
-    if result["success"]:
-        st.session_state.current_run = result
-        st.session_state.optimization_runs.append(result)
-        st.success(f"Optimization completed in {result['duration']:.1f} seconds")
-    else:
-        st.error("Optimization failed")
-
-    # Display results
-    if st.session_state.current_run:
-        display_optimization_results()
-
-def mock_optimization():
-    start_time = time.time()
-    time.sleep(2)  # Simulate processing
-    
-    return {
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "duration": time.time() - start_time,
-        "success": True,
-        "schedule": pd.DataFrame({
-            "Week": range(1, 13),
-            **{f"Training {i+1}": [f"Crew {w*10+i}" for w in range(12)] for i in range(5)}
-        }),
-        "crew_data": pd.DataFrame({
-            "Week": range(1, 13),
-            "Available Crews": [50 - w*3 for w in range(12)]
-        }),
-        "metrics": {
-            "Total Cost": 1_250_000,
-            "EOY Status": {
-                "FO": {"required": 140, "current": 118},
-                "C": {"required": 30, "current": 22}
-            }
-        }
-    }
-
-def display_optimization_results():
-    data = st.session_state.current_run
-    col_left, col_right = st.columns([2, 1])
-
-    with col_left:
-        st.subheader("Training Schedule")
-        st.dataframe(data["schedule"], height=500)
-
-    with col_right:
-        st.subheader("Crew Availability")
-        st.line_chart(data["crew_data"].set_index("Week"))
-        
-        st.subheader("Key Metrics")
-        st.metric("Total Cost", f"${data['metrics']['Total Cost']/1e6:.2f}M")
-        
-        eoy_df = pd.DataFrame({
-            "Position": ["FO", "C"],
-            "Current": [118, 22],
-            "Required": [140, 30],
-            "Progress": ["84.3%", "73.3%"]
-        }).set_index("Position")
-        st.dataframe(eoy_df)
 
 main()

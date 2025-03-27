@@ -2,15 +2,32 @@ import pandas as pd
 from pyscipopt import Model
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.stats import linregress
 
 class MOPTAModel:
-    def __init__(self, ddir='data'):
-        
+    def __init__(
+                self,
+                init_crew_df,
+                init_qual_df,
+                crew_leaving_df,
+                demand_df,
+                sim_df,
+                training_structures_df,
+                EOY_requirement_df,
+                grounded_cost_df):
+
+        self.init_crew_df = init_crew_df
+        self.init_qual_df = init_qual_df
+        self.crew_leaving_df = crew_leaving_df
+        self.demand_df = demand_df
+        self.sim_df = sim_df
+        self.training_structures_df = training_structures_df
+        self.EOY_requirement_df = EOY_requirement_df
+        self.grounded_cost_df = grounded_cost_df
+
+
         # create pyscipopt model
         self.model = Model()
-
-        # read data initially
-        self.read_csv(ddir)
 
         # set count of weeks
         self.n_weeks = 52
@@ -66,6 +83,10 @@ class MOPTAModel:
         self.add_EOY_requirement()
         self.constraint_free_crew_by_EOY()
 
+        self.add_grounded_cost_vars_week()
+        self.calc_grounded_cost_functions()
+        self.constraint_grounded_cost_vars()
+
         self.setOptimizationTarget()
 
     def optimize(self):
@@ -88,17 +109,7 @@ class MOPTAModel:
 
         self.model.setObjective(sum(self.grounded_vars_week['A']) + sum(self.grounded_vars_week['B']), 'minimize')
 
-    def read_csv(self, dir):
-
-        self.init_crew_df = pd.read_csv(f'{dir}/Initial Crew.csv')
-        self.init_qual_df = pd.read_csv(f'{dir}/Initial Crew Type Qualification.csv')
-        self.crew_leaving_df = pd.read_csv(f'{dir}/Crew Leaving.csv').fillna(0)
-        self.demand_df = pd.read_csv(f'{dir}/Crew Demand.csv')[['Week', 'Aircraft', 'Demand']]
-        self.sim_df = pd.read_csv(f'{dir}/Simulator Availability.csv')
-
-        self.training_structures_df = pd.read_csv(f'{dir}/Training.csv').fillna(0)
-
-        self.EOY_requirement_df = pd.read_csv(f'{dir}/Airbus Crew EOY Requirement.csv')
+        #self.model.setObjective(sum(self.grounded_cost_vars), 'minimize')
 
 
     def add_init_crew(self):
@@ -109,6 +120,7 @@ class MOPTAModel:
         self.init_crew_vals['B'] = {}
         self.init_crew_vals['A'] = {}
 
+        print(self.init_crew_df)
         self.init_crew_vals['B']['F'] = self.init_crew_df[self.init_crew_df['Rating'] == 'Boeing FO']['Total'].item()
         self.init_crew_vals['B']['C'] = self.init_crew_df[self.init_crew_df['Rating'] == 'Boeing C']['Total'].item()
         self.init_crew_vals['A']['F'] = self.init_crew_df[self.init_crew_df['Rating'] == 'Airbus FO']['Total'].item()
@@ -650,9 +662,40 @@ class MOPTAModel:
                     self.free_crew_vars_week[aircraft][qual][-1] >= self.eoy_requirement_vals[qual]
                 )
 
+    # here we estimate the costs for simplicity
+    # assumption for more planes the costs scale linear
+    def calc_grounded_cost_functions(self):
+
+        self.grounded_cost_slope = []
+        self.grounded_cost_intercept = []
+
+        cols = [str(i + 1) for i in range(10)]
+        price_week_num = self.grounded_cost_df[cols].to_numpy()
+
+        x = np.arange(10) + 1
+
+        for week in range(self.n_weeks):
+            regression = linregress(x=x, y=price_week_num[week])
+
+            self.grounded_cost_slope.append(regression.slope)
+            self.grounded_cost_intercept.append(regression.intercept)
+
     # grounded + hiring costs
-    def add_cost_var(self):
-        pass
+    def add_grounded_cost_vars_week(self):
+        
+        self.grounded_cost_vars = []
+        for week in range(self.n_weeks):
+
+            var = self.model.addVar(vtype='C', name=f'grounded_cost_{week}', lb=0)
+            self.grounded_cost_vars.append(var)
+
+    def constraint_grounded_cost_vars(self):
+
+        for week in range(self.n_weeks):
+
+            self.model.addCons(
+                self.grounded_cost_vars[week] == self.grounded_cost_slope[week] * (self.grounded_vars_week['A'][week] + self.grounded_vars_week['B'][week]) + self.grounded_cost_intercept[week]
+            )
 
     # optional
     def constraint_crew_by_buffer(self):
