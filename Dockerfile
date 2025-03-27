@@ -26,9 +26,14 @@ RUN apt-get update && apt-get install -y \
 	libtbb12 \
 	python3-venv
 
-COPY data .
+RUN mkdir data
+COPY data ./data
+
+RUN mkdir pages
+COPY pages ./pages
+
 COPY moptamodel.py .
-COPY test.py .
+COPY main.py .
 COPY requirements.txt .
 
 ADD https://www.scipopt.org/download/release/SCIPOptSuite-9.2.1-Linux-ubuntu24.deb . 
