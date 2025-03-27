@@ -15,7 +15,9 @@ class MOPTAModel:
         # set count of weeks
         self.n_weeks = 52
         self.max_week_influence = 12
+        self.hiring_limit = 0
 
+    def build_pyscip_model(self):
         # accumulate the crew data into easier formats
         # create scip vars if neccessary in the func
         self.add_init_crew()
@@ -47,7 +49,7 @@ class MOPTAModel:
         self.constraint_finished_training_student_vars()
 
         self.add_hiring_vars()
-        self.constraint_hiring_by_zero()
+        self.constraint_hiring_by_limit()
 
         self.add_free_crew_vars()
         self.constraint_free_crew_by_init_left_students_trainer_hiring_finished()
@@ -61,9 +63,14 @@ class MOPTAModel:
         self.add_grounded_vars()
         self.constraint_grounded_by_available()
 
+        self.add_EOY_requirement()
+        self.constraint_free_crew_by_EOY()
+
         self.setOptimizationTarget()
 
     def optimize(self):
+        self.model.freeTransform()
+        self.build_pyscip_model()
         self.model.redirectOutput()
         self.model.optimize()
 
@@ -627,26 +634,37 @@ class MOPTAModel:
                     self.model.addCons(self.grounded_vars_week[aircraft][week] >= self.demand_vals_week[aircraft][week] - self.flight_ready_crew_week[aircraft][qual][week])
 
     def add_EOY_requirement(self):
-        pass
+        
+        eoy_f = self.EOY_requirement_df[self.EOY_requirement_df['Rating'] == 'Airbus FO']['Required EOY']
+        eoy_c = self.EOY_requirement_df[self.EOY_requirement_df['Rating'] == 'Airbus C']['Required EOY']
 
-    def constraint_available_crew_by_EOY(self):
-        pass
+        self.eoy_requirement_vals = {'F':eoy_f , 'C':eoy_c}
+
+
+    def constraint_free_crew_by_EOY(self):
+        for aircraft in ['A']:
+            for qual in ['F', 'C']:
+                # enforce the last week free crew is 
+
+                self.model.addCons(
+                    self.free_crew_vars_week[aircraft][qual][-1] >= self.eoy_requirement_vals[qual]
+                )
 
     # grounded + hiring costs
     def add_cost_var(self):
         pass
 
     # optional
-    def constraint_crew_by_demand(self):
+    def constraint_crew_by_buffer(self):
         pass
 
     # neccessary 
-    def constraint_hiring_by_zero(self):
+    def constraint_hiring_by_limit(self):
         
         for aircraft in ['A', 'B']:
             for week in range(self.n_weeks):
 
-                self.model.addCons(self.hiring_vars_week[aircraft][week] == 0)
+                self.model.addCons(self.hiring_vars_week[aircraft][week] <= self.hiring_limit)
 
 
     def get_active_trainer_values(self):
