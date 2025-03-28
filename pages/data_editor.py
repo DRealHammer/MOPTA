@@ -8,7 +8,8 @@ with up_col1:
     allow_hiring = st.toggle('Allow Hiring (will increase compute time significantly)', value=st.session_state.hiring_limit > 0)
 
     if allow_hiring:
-        st.session_state.hiring_limit = 1e10
+        limit = st.number_input('Hiring Limit per Week', min_value=0, max_value=20, step=1, value=st.session_state.hiring_limit)
+        st.session_state.hiring_limit = limit
     else:
         st.session_state.hiring_limit = 0
 
