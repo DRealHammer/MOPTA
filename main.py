@@ -17,6 +17,11 @@ if "current_run" not in st.session_state:
 if "modelOutput" not in st.session_state:
     st.session_state.modelOutput = []
 
+if "hiring_limit" not in st.session_state:
+    st.session_state.hiring_limit = 0
+
+if "currency" not in st.session_state:
+    st.session_state.currency = '$'
 
 def read_csv(dir):
 
@@ -44,10 +49,18 @@ if 'data' not in st.session_state:
 # Seitenverwaltung
 def main():
 
+    with st.sidebar:
+        st.write('Hello there! Welcome to this Optimization Suite for the Transavia MOPTA Challenge 2025')
+        st.write('Just so you know: You can collapse this sidebar, so you have more space on the main page')
+        st.write('To run the optimization, just click on the red button.')
+        st.write('If you want to change something, maybe you\'ll find what you are looking for in the Data Editor')
+        st.write("Created by Daniel Hammer")
+
     p_dashboard = st.Page("pages/dashboard.py", title="Dashboard")
-    p_edit = st.Page("pages/data_editor.py", title='Data Upload & Editing')
+    p_edit = st.Page("pages/data_editor.py", title='Data Editor')
     pg = st.navigation([p_dashboard, p_edit])
     pg.run()
     
+
 
 main()
