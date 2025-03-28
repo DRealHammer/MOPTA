@@ -52,7 +52,7 @@ def main():
     with st.sidebar:
         st.write('Hello there! Welcome to this Optimization Suite for the Transavia MOPTA Challenge 2025')
         st.write('Just so you know: You can collapse this sidebar, so you have more space on the main page')
-        st.write('To run the optimization, just click on the red button.')
+        st.write('To run the optimization, just click on the green button.')
         st.write('If you want to change something, maybe you\'ll find what you are looking for in the Data Editor')
         st.write("Created by Daniel Hammer")
 
