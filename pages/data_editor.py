@@ -1,16 +1,38 @@
 import streamlit as st
 
+st.write("General Settings")
+up_col1, up_col2 = st.columns([1, 1])
+
+
+with up_col1:
+    allow_hiring = st.toggle('Allow Hiring (will increase compute time significantly)', value=st.session_state.hiring_limit > 0)
+
+    if allow_hiring:
+        st.session_state.hiring_limit = 1e10
+    else:
+        st.session_state.hiring_limit = 0
+
+with up_col2:
+    curr = st.radio('Currency', ['US Dollar ($)', 'Euro (€)'])
+
+    if '$' in curr:
+        st.session_state.currency = '$'
+    elif '€' in curr:
+        st.session_state.currency = '€'
+
+
+
 
 col1, col2 = st.columns([4, 1])
 with col1:
-    st.title("Data Upload & Editing")
+    st.title("Data Editor")
 
 with col2:
     if st.button("Export", type='primary'):
         st.toast("Not yet implemented")
 
 
-st.file_uploader('upload', label_visibility='collapsed')
+#st.file_uploader('upload', label_visibility='collapsed')
 
 st.write('### Data Selection')
 selection_options = [
