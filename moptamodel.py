@@ -107,9 +107,9 @@ class MOPTAModel:
 
         #self.model.setObjective(sum(self.free_crew_vars_week['B']['C']), 'maximize')
 
-        self.model.setObjective(sum(self.grounded_vars_week['A']) + sum(self.grounded_vars_week['B']), 'minimize')
+        #self.model.setObjective(sum(self.grounded_vars_week['A']) + sum(self.grounded_vars_week['B']), 'minimize')
 
-        #self.model.setObjective(sum(self.grounded_cost_vars), 'minimize')
+        self.model.setObjective(sum(self.grounded_cost_vars), 'minimize')
 
 
     def add_init_crew(self):
