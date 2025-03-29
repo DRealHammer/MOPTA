@@ -1,7 +1,6 @@
 import pandas as pd
 from pyscipopt import Model
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.stats import linregress
 
 class MOPTAModel:
