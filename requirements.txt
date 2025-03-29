@@ -2,6 +2,5 @@ PySCIPOpt
 streamlit
 pandas
 numpy
-matplotlib
 scipy
 openpyxl
