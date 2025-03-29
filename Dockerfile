@@ -29,6 +29,9 @@ RUN apt-get update && apt-get install -y \
 RUN mkdir data
 COPY data ./data
 
+RUN mkdir .streamlit
+COPY .streamlit ./.streamlit
+
 RUN mkdir pages
 COPY pages ./pages
 
