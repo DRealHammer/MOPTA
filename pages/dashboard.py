@@ -193,7 +193,7 @@ with l_col2:
     st.line_chart(st.session_state.solution.free_crews['A'], x_label='Weeks', y_label='Number of Crews')
 
     st.write('### Grounded Planes')
-    st.bar_chart(st.session_state.solution.grounded)
+    st.bar_chart(st.session_state.solution.grounded, x_label='Weeks', y_label='Number of Grounded Planes')
 
     
 
