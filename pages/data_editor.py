@@ -19,9 +19,6 @@ def create_xlsx():
         st.session_state.data['EOY_requirement_df'].to_excel(writer, sheet_name='Airbus Crew EOY Requirement', index=False)
         st.session_state.data['grounded_cost_df'].to_excel(writer, sheet_name='Grounded Aircraft Cost', index=False)
 
-        for sheet in writer.book.worksheets:
-            print(sheet.sheet_state)
-
     buffer.seek(0)
     return buffer
 
