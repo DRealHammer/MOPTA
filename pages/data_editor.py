@@ -1,4 +1,29 @@
 import streamlit as st
+import pandas as pd
+from io import BytesIO
+
+def create_csv(df):
+    return df.to_csv().encode('utf-8')
+
+def create_xlsx():
+
+    buffer = BytesIO()
+
+    with pd.ExcelWriter(buffer) as writer:
+        st.session_state.data['init_crew_df'].to_excel(writer, sheet_name='Initial Crew', index=False)
+        st.session_state.data['init_qual_df'].to_excel(writer, sheet_name='Initial Crew Type Qualification', index=False)
+        st.session_state.data['crew_leaving_df'].to_excel(writer, sheet_name='Crew Leaving', index=False)
+        st.session_state.data['demand_df'].to_excel(writer, sheet_name='Crew Demand', index=False)
+        st.session_state.data['sim_df'].to_excel(writer, sheet_name='Simulator Availability', index=False)
+        st.session_state.data['training_structures_df'].to_excel(writer, sheet_name='Training', index=False)
+        st.session_state.data['EOY_requirement_df'].to_excel(writer, sheet_name='Airbus Crew EOY Requirement', index=False)
+        st.session_state.data['grounded_cost_df'].to_excel(writer, sheet_name='Grounded Aircraft Cost', index=False)
+
+        for sheet in writer.book.worksheets:
+            print(sheet.sheet_state)
+
+    buffer.seek(0)
+    return buffer
 
 st.write("General Settings")
 up_col1, up_col2 = st.columns([1, 1])
@@ -29,8 +54,7 @@ with col1:
     st.title("Data Editor")
 
 with col2:
-    if st.button("Export", type='primary'):
-        st.toast("Not yet implemented")
+    pass
 
 
 #st.file_uploader('upload', label_visibility='collapsed')
@@ -48,6 +72,7 @@ selection_options = [
 ]
 current_selection = st.selectbox("data selection", options=selection_options, label_visibility='collapsed')
 
+but1, but2, but3 = st.columns([1, 1, 3])
 
 current_df = None
 
@@ -79,7 +104,6 @@ elif current_selection == 'Grounded Aircraft Cost':
 edited_df = st.data_editor(current_df, num_rows='dynamic')
 
 
-
 if current_selection == 'Initial Crew':
     st.session_state.data['init_crew_df'] = edited_df
 
@@ -103,3 +127,10 @@ elif current_selection == 'Airbus Crew EOY Requirement':
 
 elif current_selection == 'Grounded Aircraft Cost':
     st.session_state.data['grounded_cost_df'] = edited_df
+
+
+with but1:
+    st.download_button('Download All (as .xlsx)', file_name='Flight Data.xlsx', data=create_xlsx(), icon=":material/download:", type='primary')
+
+with but2:
+    st.download_button(f'{current_selection}', file_name=f'{current_selection}.csv', data=create_csv(edited_df), icon=":material/download:", type='primary')
