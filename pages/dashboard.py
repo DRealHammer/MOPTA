@@ -111,7 +111,7 @@ with col1:
     st.title('Transavia Training Scheduling')
 
 with col2:
-    button = st.button('Run Optimization', type='primary')
+    button = st.button('Run Optimization', type='primary', icon=':material/flight:')
 
 with col3:
     selection_box = st.selectbox('Select a plan', options=st.session_state.optimization_runs)
