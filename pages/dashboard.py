@@ -125,6 +125,7 @@ if button:
     mopta_model = MOPTAModel(*st.session_state.data.values())
     mopta_model.model.attachEventHandlerCallback(scipOutputhdlr, [SCIP_EVENTTYPE.PRESOLVEROUND, SCIP_EVENTTYPE.BOUNDCHANGED])
     mopta_model.hiring_limit = st.session_state.hiring_limit
+    mopta_model.hiring_cost = st.session_state.hiring_cost
 
     mopta_model.optimize()
     
@@ -133,6 +134,8 @@ if button:
     if run_status == 'optimal':
         sol = mopta_model.model.getBestSol()
         st.success(f'The plan was created successfully in {(time.time() - start_time):10.2f} seconds!')
+        
+        st.session_state.full_solution = sol
 
         clean_solution = Solution(mopta_model, sol)
         select_plan(clean_solution)
@@ -158,7 +161,7 @@ with l_col1:
         u_col1, u_col2 = st.columns([1, 1])
 
         with u_col1:
-            st.metric('Estimated Grounded Costs', f'{st.session_state.solution.optVal:,.2f} {st.session_state.currency}')
+            st.metric('Estimated Costs', f'{st.session_state.solution.optVal:,.2f} {st.session_state.currency}')
 
         with u_col2:
             st.metric('EOY FO Status', f'{st.session_state.solution.free_eoy_f}/{st.session_state.solution.f_req}')
@@ -205,3 +208,11 @@ with t1:
 
 with t2:
     st.dataframe(st.session_state.solution.hiring_schedule)
+
+
+st.write('### Full Solution')
+st.write('If you are interested in all optimization variables, like how many simulators are used or anything else, expand the box at the bottom. This is only available right after the computation.')
+
+if "full_solution" in st.session_state:
+    with st.expander('Full Optimization Solution'):
+        st.write(st.session_state.full_solution)
