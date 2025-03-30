@@ -72,3 +72,5 @@ docker buildx build --platform linux/amd64 -t mopta --load --no-cache .
 # Start container with AMD64 emulation
 docker run --platform=linux/amd64 -p 80:8501 -d mopta
 ```
+
+Disclaimer: I do not guarantee that the solutions created by the software are always accurate and should in every case be double checked for plausibilty before any decision is made.
