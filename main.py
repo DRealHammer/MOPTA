@@ -17,8 +17,14 @@ if "current_run" not in st.session_state:
 if "modelOutput" not in st.session_state:
     st.session_state.modelOutput = []
 
+if "allow_hiring" not in st.session_state:
+    st.session_state.allow_hiring = False
+
 if "hiring_limit" not in st.session_state:
     st.session_state.hiring_limit = 0
+
+if "hiring_cost" not in st.session_state:
+    st.session_state.hiring_cost = 0
 
 if "currency" not in st.session_state:
     st.session_state.currency = '$'
@@ -50,10 +56,11 @@ if 'data' not in st.session_state:
 def main():
 
     with st.sidebar:
-        st.write('Hello there! Welcome to this Optimization Suite for the Transavia MOPTA Challenge 2025')
+        st.write('Hello there! Welcome to this Optimization Suite for the Transavia [MOPTA Challenge 2025](https://coral.ise.lehigh.edu/mopta2025/competition/)')
         st.write('Just so you know: You can collapse this sidebar, so you have more space on the main page')
         st.write('To run the optimization, just click on the green button.')
         st.write('If you want to change something, maybe you\'ll find what you are looking for in the Data Editor')
+        st.write('If you want to run this locally or have a look at the code in more detail take a look at [GitHub](https://github.com/DRealHammer/MOPTA)')
         st.write("Created by Daniel Hammer")
 
     p_dashboard = st.Page("pages/dashboard.py", title="Dashboard")

@@ -27,13 +27,17 @@ up_col1, up_col2 = st.columns([1, 1])
 
 
 with up_col1:
-    allow_hiring = st.toggle('Allow Hiring (will increase compute time significantly)', value=st.session_state.hiring_limit > 0)
+    allow_hiring = st.toggle('Allow Hiring (will increase compute time significantly)', value=st.session_state.allow_hiring)
+    
+    st.session_state.allow_hiring = allow_hiring
 
-    if allow_hiring:
-        limit = st.number_input('Hiring Limit per Week', min_value=0, max_value=20, step=1, value=st.session_state.hiring_limit)
-        st.session_state.hiring_limit = limit
+    if st.session_state.allow_hiring:
+        st.session_state.hiring_limit = st.number_input('Hiring Limit per Week', min_value=0, max_value=20, step=1, value=st.session_state.hiring_limit)
+
+        st.session_state.hiring_cost = st.number_input('Hiring Cost per Hired Position', min_value=0, value=st.session_state.hiring_cost)
     else:
         st.session_state.hiring_limit = 0
+        st.session_state.hiring_cost = 0
 
 with up_col2:
     curr = st.radio('Currency', ['US Dollar ($)', 'Euro (€)'])

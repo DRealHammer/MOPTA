@@ -32,6 +32,7 @@ class MOPTAModel:
         self.n_weeks = 52
         self.max_week_influence = 12
         self.hiring_limit = 0
+        self.hiring_cost = 0
 
     def build_pyscip_model(self):
         # accumulate the crew data into easier formats
@@ -108,7 +109,10 @@ class MOPTAModel:
 
         #self.model.setObjective(sum(self.grounded_vars_week['A']) + sum(self.grounded_vars_week['B']), 'minimize')
 
-        self.model.setObjective(sum(self.grounded_cost_vars), 'minimize')
+        hiring_costs = sum(self.hiring_vars_week['A']) + sum(self.hiring_vars_week['B'])
+        hiring_costs = self.hiring_cost * hiring_costs
+
+        self.model.setObjective(sum(self.grounded_cost_vars) + hiring_costs, 'minimize')
 
 
     def add_init_crew(self):
@@ -707,7 +711,6 @@ class MOPTAModel:
             for week in range(self.n_weeks):
 
                 self.model.addCons(self.hiring_vars_week[aircraft][week] <= self.hiring_limit)
-
 
     def get_active_trainer_values(self):
 
