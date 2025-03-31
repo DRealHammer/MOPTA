@@ -3,6 +3,10 @@
 This is my solution for the [MOPTA Competition 2025](https://coral.ise.lehigh.edu/mopta2025/competition/). The problem is about retraining Boeing crews to new Airbus planes. As there are a lot of specifications and restrictions, this requires a modeling approach of some sort.
 With this submission, there is not only an optimal result via [SCIP](https://www.scipopt.org) in terms of minimizing the cost, but also an interactive Dashboard for live editing and exporting data from the optimization suite via [Streamlit](https://streamlit.io/). For further interpretation, there are also some graphs, that display the core information of the solution found. Solutions are stored in the live session until reload.
 
+## Live Demo
+
+At this time, you can also try out the live demo for this on [http://mopta.hammercore.de](http://mopta.hammercore.de).
+
 
 ## Installation on x86 Architecture
 
