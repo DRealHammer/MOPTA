@@ -1,14 +1,14 @@
 # MOPTA 2025 Transavia Retraining Scheduling Problem
 
 This is my solution for the [MOPTA Competition 2025](https://coral.ise.lehigh.edu/mopta2025/competition/). The problem is about retraining Boeing crews to new Airbus planes. As there are a lot of specifications and restrictions, this requires a modeling approach of some sort.
-With this submission, there is not only an optimal result via [SCIP](https://www.scipopt.org) in terms of minimizing the cost, but also an interactive Dashboard for live editing and exporting data from the optimization suite. For further interpretation, there are also some graphs, that display the core information of the solution found. Solutions are stored in the live session until reload.
+With this submission, there is not only an optimal result via [SCIP](https://www.scipopt.org) in terms of minimizing the cost, but also an interactive Dashboard for live editing and exporting data from the optimization suite via [Streamlit](https://streamlit.io/). For further interpretation, there are also some graphs, that display the core information of the solution found. Solutions are stored in the live session until reload.
 
 
 ## Installation on x86 Architecture
 
 ### Setup
 
-````bash
+```bash
 # create a virtual environment
 python -m venv .venv
 
@@ -50,7 +50,7 @@ Advice: The optimization algorithm benefits a lot from running on multicore mach
 sudo apt install docker
 ```
 
-# Install QEMU for multi-architecture support
+### Install QEMU for multi-architecture support
 ```bash
 sudo apt install -y qemu-user-static
 ```
